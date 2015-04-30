@@ -11,7 +11,7 @@
   ],
   "main": "polymer-daterange-picker.html",
   "description": "Polymer Daterange Picker.",
-  "homepage": "https://github.com/thecontrolgroup/polymer-daterange-picker/",
+  "homepage": "https://github.com/the-control-group/polymer-daterange-picker/",
   "license": "MIT",
   "ignore": [
     "**/.*",
