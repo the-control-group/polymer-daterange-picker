@@ -1,0 +1,179 @@
+<!--
+@element polymer-daterange-picker
+@author designbyraychou
+@homepage https://github.com/the-control-group/polymer-daterange-picker
+
+__Example:__
+
+```
+	<polymer-element name="polymer-daterange-picker-example">
+		<template>
+			<div class="startPicked"><strong>Start</strong> {{ startPicked | momentDisplay }}</div>
+			<div class="endPicked"><strong>End:</strong> {{ endPicked | momentDisplay }}</div>
+			<polymer-daterange-picker ranges="{{ranges}}" selected="{{selected}}" startPicked="{{startPicked}}" endPicked="{{endPicked}}"></polymer-daterange-picker>
+		</template>
+		<script src="../moment/moment.js"></script>
+		<script>
+		Polymer({
+			ranges: [
+				{
+					label: "Today",
+					handler: function(e) {
+						this.startPicked = moment().startOf('day').format();
+						this.endPicked = moment().format();
+					}
+				},{
+					label: "This Week",
+					handler: function(e) {
+						this.startPicked = moment().startOf('week').format();
+						this.endPicked = moment().format();
+					}
+				}
+			],
+			selected: 1,
+			startPicked: moment().startOf('week').format(),
+			endPicked: moment().format(),
+			momentDisplay: function(data) {
+				if(data) {
+					return moment(data).format('MM-DD-YYYY');
+				}
+				return;
+			}
+		});
+		</script>
+	</polymer-element>
+	<polymer-daterange-picker-example></polymer-daterange-picker>
+```
+# Attributes
+
+#### `ranges`
+
+An array of objects. Each object expects label and handler properties.
+
+#### `selected`
+
+Integer selecting an item from ranges
+
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-selector/core-selector.html">
+<link rel="import" href="./polymer-calendar-datepicker.html">
+<polymer-element name="polymer-daterange-picker" attributes="ranges selected hasCustom">
+	<template>
+		<link rel="stylesheet" type="text/css" href="./polymer-daterange-picker.css">
+		<div id="container">
+			<div class="nav">
+				<div class="timeline">
+					<div class="timestart"></div>
+					<div class="timeend"></div>
+				</div>
+				<core-selector class="ranges" selected="{{selected}}">
+					<template repeat="{{ range, i in ranges }}">
+						<div class="item" on-tap="{{tapLabel}}" i="{{i}}">
+							<div class="label">{{ range.label }}</div>
+							<div class="dot"></div>
+						</div>
+					</template>
+				</core-selector>
+			</div>
+			<div id="calendars">
+				<div class="start-calendar">
+					<polymer-calendar-datepicker start="start" startDate="{{startDate}}" endDate="{{endDate}}"></polymer-date-picker-calendar>
+				</div>
+				<div class="end-calendar">
+					<polymer-calendar-datepicker end="end" startDate="{{startDate}}" endDate="{{endDate}}"></polymer-date-picker-calendar>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script src="../moment/moment.js"></script>
+	<script src="../jquery/dist/jquery.min.js"></script>
+	<script>
+		var defaultformat = 'YYYY-MM-DD';
+		Polymer({
+			hasCustom: true,
+			ranges: [
+				{
+					label: "Last Week",
+					handler: function(evt,detail,sender) {
+						this.startPicked = moment().startOf('week').subtract(1, 'week').format();
+						this.endPicked = moment().endOf('week').subtract(1, 'week').format();
+					}
+				},{
+					label: "Yesterday",
+					handler: function(evt,detail,sender) {
+						this.startPicked = moment().startOf('day').subtract(1, 'days').format();
+						this.endPicked = moment().endOf('day').subtract(1, 'days').format();
+					}
+				},{
+					label: "Today",
+					handler: function(evt,detail,sender) {
+						this.startPicked = moment().startOf('day').format();
+						this.endPicked = moment().format();
+					}
+				},{
+					label: "This Week",
+					handler: function(evt,detail,sender) {
+						this.startPicked = moment().startOf('week').format();
+						this.endPicked = moment().format();
+					}
+				},{
+					label: "This Month",
+					handler: function(evt,detail,sender) {
+						this.startPicked = moment().startOf('month').format();
+						this.endPicked = moment().format();
+					}
+				}
+			],
+			selected: 2,
+			ready: function() {
+				if( this.hasCustom ) {
+					this.ranges.push({
+						label: "Custom"
+					});
+				}
+				if( this.selected ) {
+					this.ranges[this.selected].handler();
+				}
+			},
+			tapLabel: function(evt,detail,sender) {
+				var el = this;
+				var self = $(sender);
+				var i = self.attr('i');
+				var fn = el.ranges[i].handler;
+				el.selected = i;
+				if( fn ) fn.apply(el,arguments);
+			},
+			startDateChanged: function(oldValue, newValue) {
+				var poly = this;
+				var picked = moment(poly.startPicked).format(defaultformat);
+				if( newValue != picked || picked == 'Invalid date' ) {
+					poly.startPicked = moment(newValue).format();
+					if( poly.hasCustom ) poly.selected = poly.ranges.length -1;
+				}
+			},
+			endDateChanged: function(oldValue, newValue) {
+				var poly = this;
+				var picked = moment(poly.endPicked).format(defaultformat);
+				if( newValue != picked || picked == 'Invalid date' ) {
+					poly.endPicked = moment(newValue).endOf('day').format();
+					poly.selected = poly.ranges.length -1;
+				}
+			},
+			startPickedChanged: function(oldValue, newValue) {
+				var poly = this;
+				var newDate = moment(newValue).format(defaultformat);
+				if(newValue != newDate) {
+					poly.startDate = newDate;
+				}
+			},
+			endPickedChanged: function(oldValue, newValue) {
+				var poly = this;
+				var newDate = moment(newValue).format(defaultformat);
+				if(newValue != newDate) {
+					poly.endDate = newDate;
+				}
+			}
+		});
+	</script>
+</polymer-element>

@@ -1,0 +1,92 @@
+:host {
+	font-family: sans-serif;
+}
+hr {
+	display: block;
+	border: 0 none;
+	height: 2px;
+	background: #eee;
+	padding: 0;
+	margin: 20px 0;
+}
+#container {
+	background: #fff;
+	padding: 20px;
+	border-radius: 5px;
+	position: absolute;
+}
+.nav {
+	position: relative;
+}
+.timeline,
+.timestart,
+.timeend {
+	background: #ccc;
+}
+.timeline {
+	position: absolute;
+	width: 100%;
+	height: 4px;
+	bottom: 5px;
+	left: 0;
+}
+.timestart,
+.timeend {
+	position: absolute;
+	bottom: -7px;
+	height: 18px;
+	width: 4px;
+}
+.timestart {
+	left: 0;
+}
+.timeend {
+	right: 0;
+}
+.ranges {
+	display: inline-flex;
+}
+.item {
+	box-sizing: border-box;
+	position: relative;
+	margin: 0 20px;
+	padding-bottom: 20px;
+	cursor: pointer;
+}
+.label {
+	color: #999;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.dot {
+	position: absolute;
+	bottom: -3px;
+	left: 50%;
+	margin-left: -5px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #eee;
+	border: 5px solid #fff;
+}
+.core-selected .label {
+	color: #333;
+}
+.core-selected .dot{
+	background: #03b1d8;
+}
+
+#calendars {
+	width: 100%;
+	min-width: 700px;
+}
+.start-calendar,
+.end-calendar {
+	width: 48%;
+}
+.start-calendar {
+	float: left;
+}
+.end-calendar {
+	float: right;
+}

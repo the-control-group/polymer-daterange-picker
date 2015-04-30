@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>polymer-daterange-picker tests</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<script src="../../webcomponentsjs/webcomponents.js"></script>
+	<script src="../../web-component-tester/browser.js"></script>
+	<script src="../../moment/moment.js"></script>
+	<link href="../polymer-daterange-picker.html" rel="import">
+</head>
+<body unresolved>
+	<polymer-daterange-picker></polymer-daterange-picker>
+	<script>
+		var s = document.querySelector('polymer-daterange-picker');
+		/*function elementTest(evt,elName,testFn) {
+			for (var i = evt.path.length - 1; i >= 0; i--) {
+				if( evt.path[i] == elName ) {
+					return testFn();
+				}
+			}
+			return false;
+		}*/
+		var isFirst = true;
+		s.addEventListener('core-select', function(evt){
+			if( isFirst ) {
+				isFirst = false;
+				suite('polymer-daterange-picker', function() {
+					test('Test defaults ranges', function() {
+						// Last Week
+						s.ranges[0].handler.apply(s);
+						assert.equal(s.startPicked, moment().startOf('week').subtract(1, 'week').format());
+						// Yesterday
+						s.ranges[1].handler.apply(s);
+						assert.equal(s.startPicked, moment().startOf('day').subtract(1, 'days').format());
+						// Today
+						s.ranges[2].handler.apply(s);
+						assert.equal(s.startPicked, moment().startOf('day').format());
+						// This Week
+						s.ranges[3].handler.apply(s);
+						assert.equal(s.startPicked, moment().startOf('week').format());
+						// This Month
+						s.ranges[4].handler.apply(s);
+						assert.equal(s.startPicked, moment().startOf('month').format());
+					});
+				});
+			}
+		});
+	</script>
+</body>
+</html>

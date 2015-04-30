@@ -1,0 +1,39 @@
+.calendar {
+	display: block;
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+th,
+td {
+	text-align: center;
+	cursor: pointer;
+	white-space: nowrap;
+	padding: 5px;
+}
+td {
+	border-top: 5px solid #fff;
+}
+th.daysOfWeek {
+	border-top: 1px solid #eee;
+	text-transform: uppercase;
+	padding: 10px 5px;
+	font-size: 0.65em;
+}
+td.disabled,
+td.off {
+	color: #999999;
+}
+td.available:hover {
+	background: #EEEEEE;
+}
+td.in-range {
+	background: #d3ecf5;
+	color: #fff;
+}
+td.active,
+td.active:hover {
+	background-color: #03b1d8;
+	color: #fff;
+}
