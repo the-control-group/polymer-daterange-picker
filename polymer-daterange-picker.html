@@ -58,7 +58,7 @@ Integer selecting an item from ranges
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="./polymer-calendar-datepicker.html">
-<polymer-element name="polymer-daterange-picker" attributes="ranges selected hasCustom startPicked endPicked">
+<polymer-element name="polymer-daterange-picker" attributes="ranges selected hasCustom startPicked endPicked label">
 	<template>
 		<link rel="stylesheet" type="text/css" href="./polymer-daterange-picker.css">
 		<div id="container">
@@ -76,7 +76,7 @@ Integer selecting an item from ranges
 					</template>
 				</core-selector>
 			</div>
-			<div id="calendars">
+			<div id="calendars" class="group">
 				<div class="start-calendar">
 					<polymer-calendar-datepicker start="start" startDate="{{startDate}}" endDate="{{endDate}}"></polymer-date-picker-calendar>
 				</div>
@@ -89,44 +89,52 @@ Integer selecting an item from ranges
 	<script src="../moment/moment.js"></script>
 	<script src="../jquery/dist/jquery.min.js"></script>
 	<script>
+		var now = moment().format();
 		var defaultformat = 'YYYY-MM-DD';
 		Polymer({
 			hasCustom: true,
-			ranges: [
-				{
-					label: "Last Week",
-					handler: function(evt,detail,sender) {
-						this.startPicked = moment().startOf('week').subtract(1, 'week').format();
-						this.endPicked = moment().endOf('week').subtract(1, 'week').format();
-					}
-				},{
-					label: "Yesterday",
-					handler: function(evt,detail,sender) {
-						this.startPicked = moment().startOf('day').subtract(1, 'days').format();
-						this.endPicked = moment().endOf('day').subtract(1, 'days').format();
-					}
-				},{
-					label: "Today",
-					handler: function(evt,detail,sender) {
-						this.startPicked = moment().startOf('day').format();
-						this.endPicked = moment().format();
-					}
-				},{
-					label: "This Week",
-					handler: function(evt,detail,sender) {
-						this.startPicked = moment().startOf('week').format();
-						this.endPicked = moment().format();
-					}
-				},{
-					label: "This Month",
-					handler: function(evt,detail,sender) {
-						this.startPicked = moment().startOf('month').format();
-						this.endPicked = moment().format();
-					}
-				}
-			],
+			ranges: [],
 			selected: 2,
+			label: '',
+			startPicked: now,
+			endPicked: now,
 			ready: function() {
+				// Set Defaults
+				if( typeof this.ranges == 'undefined' || this.ranges.length == 0 ) {
+					this.ranges = [
+						{
+							label: "Last Week",
+							handler: function(evt,detail,sender) {
+								this.startPicked = moment().startOf('week').subtract(1, 'week').format();
+								this.endPicked = moment().endOf('week').subtract(1, 'week').format();
+							}
+						},{
+							label: "Yesterday",
+							handler: function(evt,detail,sender) {
+								this.startPicked = moment().startOf('day').subtract(1, 'days').format();
+								this.endPicked = moment().endOf('day').subtract(1, 'days').format();
+							}
+						},{
+							label: "Today",
+							handler: function(evt,detail,sender) {
+								this.startPicked = moment().startOf('day').format();
+								this.endPicked = moment().format();
+							}
+						},{
+							label: "This Week",
+							handler: function(evt,detail,sender) {
+								this.startPicked = moment().startOf('week').format();
+								this.endPicked = moment().format();
+							}
+						},{
+							label: "This Month",
+							handler: function(evt,detail,sender) {
+								this.startPicked = moment().startOf('month').format();
+								this.endPicked = moment().format();
+							}
+						}
+					];
+				}
 				if( this.hasCustom ) {
 					this.ranges.push({
 						label: "Custom"
@@ -142,6 +150,7 @@ Integer selecting an item from ranges
 				var i = self.attr('i');
 				var fn = el.ranges[i].handler;
 				el.selected = i;
+				el.label = el.ranges[i].label;
 				if( fn ) fn.apply(el,arguments);
 			},
 			startDateChanged: function(oldValue, newValue) {
@@ -149,7 +158,10 @@ Integer selecting an item from ranges
 				var picked = moment(poly.startPicked).format(defaultformat);
 				if( newValue != picked || picked == 'Invalid date' ) {
 					poly.startPicked = moment(newValue).format();
-					if( poly.hasCustom ) poly.selected = poly.ranges.length -1;
+					if( poly.hasCustom ) {
+						poly.selected = poly.ranges.length -1;
+						poly.label = 'Custom';
+					}
 				}
 			},
 			endDateChanged: function(oldValue, newValue) {
@@ -157,7 +169,10 @@ Integer selecting an item from ranges
 				var picked = moment(poly.endPicked).format(defaultformat);
 				if( newValue != picked || picked == 'Invalid date' ) {
 					poly.endPicked = moment(newValue).endOf('day').format();
-					poly.selected = poly.ranges.length -1;
+					if( poly.hasCustom ) {
+						poly.selected = poly.ranges.length -1;
+						poly.label = 'Custom';
+					}
 				}
 			},
 			startPickedChanged: function(oldValue, newValue) {

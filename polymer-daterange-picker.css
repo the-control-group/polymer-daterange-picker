@@ -1,6 +1,3 @@
-:host {
-	font-family: sans-serif;
-}
 hr {
 	display: block;
 	border: 0 none;
@@ -9,14 +6,19 @@ hr {
 	padding: 0;
 	margin: 20px 0;
 }
+.group:after {
+	content: "";
+	display: table;
+	clear: both;
+}
 #container {
 	background: #fff;
 	padding: 20px;
 	border-radius: 5px;
-	position: absolute;
 }
 .nav {
 	position: relative;
+	margin-bottom: 15px;
 }
 .timeline,
 .timestart,
@@ -45,6 +47,8 @@ hr {
 }
 .ranges {
 	display: inline-flex;
+	justify-content: center;
+	width: 100%;
 }
 .item {
 	box-sizing: border-box;
