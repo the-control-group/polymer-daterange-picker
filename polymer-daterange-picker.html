@@ -103,53 +103,6 @@ Integer selecting an item from ranges
 		</div>
 	</template>
 	<script>
-	var calendarDateStart = moment().startOf('day').format('MM-DD-YY');
-	var calendarDateEnd = moment().endOf('day').format('MM-DD-YY');
-	var clockStart = moment().startOf('day').format('hh:mma');
-	var clockEnd = moment().endOf('day').format('hh:mma');
-	var timeRanges = [
-		{
-			label: "Last Week",
-			handler: function() {
-				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
-				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
-				this.clockStart = moment().startOf('day').format('hh:mma');
-				this.clockEnd = moment().endOf('day').format('hh:mma');
-			}
-		},{
-			label: "Yesterday",
-			handler: function() {
-				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
-				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
-				this.clockStart = moment().startOf('day').format('hh:mma');
-				this.clockEnd = moment().endOf('day').format('hh:mma');
-			}
-		},{
-			label: "Today",
-			handler: function() {
-				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').format();
-				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
-				this.clockStart = moment().startOf('day').format('hh:mma');
-				this.clockEnd = moment().endOf('day').format('hh:mma');
-			}
-		},{
-			label: "This Week",
-			handler: function() {
-				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').format();
-				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
-				this.clockStart = moment().startOf('day').format('hh:mma');
-				this.clockEnd = moment().endOf('day').format('hh:mma');
-			}
-		},{
-			label: "This Month",
-			handler: function() {
-				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('month').format();
-				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
-				this.clockStart = moment().startOf('day').format('hh:mma');
-				this.clockEnd = moment().endOf('day').format('hh:mma');
-			}
-		}
-	];
 
 	Polymer({
 		publish: {
@@ -158,10 +111,10 @@ Integer selecting an item from ranges
 			label: '',
 			timeStart: '',
 			timeEnd: '',
-			calendarDateStart: calendarDateStart, // 'MM-DD-YY'
-			calendarDateEnd: calendarDateEnd, // 'MM-DD-YY'
-			clockStart: clockStart, // 'hh:mma'
-			clockEnd: clockEnd, // 'hh:mma'
+			calendarDateStart: null, // 'MM-DD-YY'
+			calendarDateEnd: null, // 'MM-DD-YY'
+			clockStart: null, // 'hh:mma'
+			clockEnd: null, // 'hh:mma'
 			moment: null,
 			momentTimezone: 'US/Pacific',
 			momentDefaultTimezone: null,
@@ -185,8 +138,14 @@ Integer selecting an item from ranges
 		},
 		momentChanged: function(oldValue,newValue) {
 			var poly = this;
+
+			this.calendarDateStart = this.moment().startOf('day').format('MM-DD-YY');
+			this.calendarDateEnd = this.moment().endOf('day').format('MM-DD-YY');
+			this.clockStart = this.moment().startOf('day').format('hh:mma');
+			this.clockEnd = this.moment().endOf('day').format('hh:mma');
+
 			if( this.timeRanges.length == 0 ) {
-				this.timeRanges = timeRanges;
+				this.timeRanges = this.getDefaultTimeRanges();
 			}
 			this.timeRanges.push({
 				label: "Custom"
@@ -223,10 +182,57 @@ Integer selecting an item from ranges
 		updateTimes: function() {
 			this.job('updateTimes',function() {
 				var format = 'YYYY-MM-DD hh:mma';
-				this.timeStart = this.moment(this.calendarDateStart + ' '+this.clockStart, format).tz(this.momentTimezone).format();
-				this.timeEnd = this.moment(this.calendarDateEnd + ' '+this.clockEnd, format).tz(this.momentTimezone).format();
+				var start = this.calendarDateStart + ' '+this.clockStart;
+				var end = this.calendarDateEnd + ' '+this.clockEnd;
+				this.timeStart = this.moment.tz(start,format,this.momentTimezone).format();
+				this.timeEnd = this.moment.tz(end,format,this.momentTimezone).format();
 				this.fire('done');
 			}, 60);
+		},
+		getDefaultTimeRanges: function() {
+			return [
+				{
+					label: "Last Week",
+					handler: function() {
+						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
+						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
+						this.clockStart = moment().startOf('day').format('hh:mma');
+						this.clockEnd = moment().endOf('day').format('hh:mma');
+					}
+				},{
+					label: "Yesterday",
+					handler: function() {
+						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
+						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
+						this.clockStart = moment().startOf('day').format('hh:mma');
+						this.clockEnd = moment().endOf('day').format('hh:mma');
+					}
+				},{
+					label: "Today",
+					handler: function() {
+						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').format();
+						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+						this.clockStart = moment().startOf('day').format('hh:mma');
+						this.clockEnd = moment().endOf('day').format('hh:mma');
+					}
+				},{
+					label: "This Week",
+					handler: function() {
+						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').format();
+						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+						this.clockStart = moment().startOf('day').format('hh:mma');
+						this.clockEnd = moment().endOf('day').format('hh:mma');
+					}
+				},{
+					label: "This Month",
+					handler: function() {
+						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('month').format();
+						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+						this.clockStart = moment().startOf('day').format('hh:mma');
+						this.clockEnd = moment().endOf('day').format('hh:mma');
+					}
+				}
+			];
 		},
 	});
 	</script>
