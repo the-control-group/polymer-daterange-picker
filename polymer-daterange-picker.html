@@ -8,9 +8,9 @@ __Example:__
 ```
 	<polymer-element name="polymer-daterange-picker-example">
 		<template>
-			<div class="startPicked"><strong>Start</strong> {{ startPicked | momentDisplay }}</div>
-			<div class="endPicked"><strong>End:</strong> {{ endPicked | momentDisplay }}</div>
-			<polymer-daterange-picker ranges="{{ranges}}" selected="{{selected}}" startPicked="{{startPicked}}" endPicked="{{endPicked}}"></polymer-daterange-picker>
+			<div class="dayStart"><strong>Start</strong> {{ dayStart | momentDisplay }}</div>
+			<div class="dayEnd"><strong>End:</strong> {{ dayEnd | momentDisplay }}</div>
+			<polymer-daterange-picker ranges="{{ranges}}" selected="{{selected}}" dayStart="{{dayStart}}" dayEnd="{{dayEnd}}"></polymer-daterange-picker>
 		</template>
 		<script src="../moment/moment.js"></script>
 		<script>
@@ -19,20 +19,20 @@ __Example:__
 				{
 					label: "Today",
 					handler: function(e) {
-						this.startPicked = moment().startOf('day').format();
-						this.endPicked = moment().format();
+						this.dayStart = poly.moment().startOf('day').format();
+						this.dayEnd = poly.moment().format();
 					}
 				},{
 					label: "This Week",
 					handler: function(e) {
-						this.startPicked = moment().startOf('week').format();
-						this.endPicked = moment().format();
+						this.dayStart = poly.moment().startOf('week').format();
+						this.dayEnd = poly.moment().format();
 					}
 				}
 			],
 			selected: 1,
-			startPicked: moment().startOf('week').format(),
-			endPicked: moment().format(),
+			dayStart: poly.moment().startOf('week').format(),
+			dayEnd: poly.moment().format(),
 			momentDisplay: function(data) {
 				if(data) {
 					return moment(data).format('MM-DD-YYYY');
@@ -58,18 +58,22 @@ Integer selecting an item from ranges
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="./polymer-calendar-datepicker.html">
-<polymer-element name="polymer-daterange-picker" attributes="ranges selected hasCustom startPicked endPicked label">
+<link rel="import" href="./polymer-moment-timezone.html">
+<polymer-element name="polymer-daterange-picker" attributes="ranges startTimeRange timeStart timeEnd label momentDefaultTimezone selectedTimezone moment momentTimezone momentFormat">
 	<template>
 		<link rel="stylesheet" type="text/css" href="./polymer-daterange-picker.css">
+		<polymer-moment-timezone
+			moment="{{ moment }}"
+			momentDefaultTimezone="{{ momentDefaultTimezone }}"></polymer-moment-timezone>
 		<div id="container">
 			<div class="nav">
 				<div class="timeline">
-					<div class="timestart"></div>
-					<div class="timeend"></div>
+					<div class="calendarDateStart"></div>
+					<div class="calendarDateEnd"></div>
 				</div>
-				<core-selector class="ranges" selected="{{selected}}">
-					<template repeat="{{ range, i in ranges }}">
-						<div class="item" on-tap="{{tapLabel}}" i="{{i}}">
+				<core-selector class="ranges" selected="{{ selected }}">
+					<template repeat="{{ range, i in timeRanges }}">
+						<div class="item">
 							<div class="label">{{ range.label }}</div>
 							<div class="dot"></div>
 						</div>
@@ -78,117 +82,152 @@ Integer selecting an item from ranges
 			</div>
 			<div id="calendars" class="group">
 				<div class="start-calendar">
-					<polymer-calendar-datepicker start="start" startDate="{{startDate}}" endDate="{{endDate}}"></polymer-date-picker-calendar>
+					<polymer-calendar-datepicker
+						start="start"
+						on-tap="{{ setCustom }}"
+						calendarDateStart="{{ calendarDateStart }}"
+						calendarDateEnd="{{ calendarDateEnd }}"
+						moment="{{ moment }}"
+						momentTimezone="{{ momentTimezone }}"></polymer-date-picker-calendar>
 				</div>
 				<div class="end-calendar">
-					<polymer-calendar-datepicker end="end" startDate="{{startDate}}" endDate="{{endDate}}"></polymer-date-picker-calendar>
+					<polymer-calendar-datepicker
+						end="end"
+						on-tap="{{ setCustom }}"
+						calendarDateStart="{{ calendarDateStart }}"
+						calendarDateEnd="{{ calendarDateEnd }}"
+						moment="{{ moment }}"
+						momentTimezone="{{ momentTimezone }}"></polymer-date-picker-calendar>
 				</div>
 			</div>
 		</div>
 	</template>
-	<script src="../moment/moment.js"></script>
-	<script src="../jquery/dist/jquery.min.js"></script>
 	<script>
-		var now = moment().format();
-		var defaultformat = 'YYYY-MM-DD';
-		Polymer({
-			hasCustom: true,
-			ranges: [],
-			selected: 2,
-			label: '',
-			startPicked: now,
-			endPicked: now,
-			ready: function() {
-				// Set Defaults
-				if( typeof this.ranges == 'undefined' || this.ranges.length == 0 ) {
-					this.ranges = [
-						{
-							label: "Last Week",
-							handler: function(evt,detail,sender) {
-								this.startPicked = moment().startOf('week').subtract(1, 'week').format();
-								this.endPicked = moment().endOf('week').subtract(1, 'week').format();
-							}
-						},{
-							label: "Yesterday",
-							handler: function(evt,detail,sender) {
-								this.startPicked = moment().startOf('day').subtract(1, 'days').format();
-								this.endPicked = moment().endOf('day').subtract(1, 'days').format();
-							}
-						},{
-							label: "Today",
-							handler: function(evt,detail,sender) {
-								this.startPicked = moment().startOf('day').format();
-								this.endPicked = moment().format();
-							}
-						},{
-							label: "This Week",
-							handler: function(evt,detail,sender) {
-								this.startPicked = moment().startOf('week').format();
-								this.endPicked = moment().format();
-							}
-						},{
-							label: "This Month",
-							handler: function(evt,detail,sender) {
-								this.startPicked = moment().startOf('month').format();
-								this.endPicked = moment().format();
-							}
-						}
-					];
-				}
-				if( this.hasCustom ) {
-					this.ranges.push({
-						label: "Custom"
-					});
-				}
-				if( this.selected ) {
-					this.ranges[this.selected].handler();
-				}
-			},
-			tapLabel: function(evt,detail,sender) {
-				var el = this;
-				var self = $(sender);
-				var i = self.attr('i');
-				var fn = el.ranges[i].handler;
-				el.selected = i;
-				el.label = el.ranges[i].label;
-				if( fn ) fn.apply(el,arguments);
-			},
-			startDateChanged: function(oldValue, newValue) {
-				var poly = this;
-				var picked = moment(poly.startPicked).format(defaultformat);
-				if( newValue != picked || picked == 'Invalid date' ) {
-					poly.startPicked = moment(newValue).format();
-					if( poly.hasCustom ) {
-						poly.selected = poly.ranges.length -1;
-						poly.label = 'Custom';
-					}
-				}
-			},
-			endDateChanged: function(oldValue, newValue) {
-				var poly = this;
-				var picked = moment(poly.endPicked).format(defaultformat);
-				if( newValue != picked || picked == 'Invalid date' ) {
-					poly.endPicked = moment(newValue).endOf('day').format();
-					if( poly.hasCustom ) {
-						poly.selected = poly.ranges.length -1;
-						poly.label = 'Custom';
-					}
-				}
-			},
-			startPickedChanged: function(oldValue, newValue) {
-				var poly = this;
-				var newDate = moment(newValue).format(defaultformat);
-				if(newValue != newDate) {
-					poly.startDate = newDate;
-				}
-			},
-			endPickedChanged: function(oldValue, newValue) {
-				var poly = this;
-				var newDate = moment(newValue).format(defaultformat);
-				if(newValue != newDate) {
-					poly.endDate = newDate;
-				}
+	var calendarDateStart = moment().startOf('day').format('MM-DD-YY');
+	var calendarDateEnd = moment().endOf('day').format('MM-DD-YY');
+	var clockStart = moment().startOf('day').format('hh:mma');
+	var clockEnd = moment().endOf('day').format('hh:mma');
+	var timeRanges = [
+		{
+			label: "Last Week",
+			handler: function() {
+				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
+				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
+				this.clockStart = moment().startOf('day').format('hh:mma');
+				this.clockEnd = moment().endOf('day').format('hh:mma');
 			}
-		});
+		},{
+			label: "Yesterday",
+			handler: function() {
+				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
+				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
+				this.clockStart = moment().startOf('day').format('hh:mma');
+				this.clockEnd = moment().endOf('day').format('hh:mma');
+			}
+		},{
+			label: "Today",
+			handler: function() {
+				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').format();
+				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+				this.clockStart = moment().startOf('day').format('hh:mma');
+				this.clockEnd = moment().endOf('day').format('hh:mma');
+			}
+		},{
+			label: "This Week",
+			handler: function() {
+				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').format();
+				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+				this.clockStart = moment().startOf('day').format('hh:mma');
+				this.clockEnd = moment().endOf('day').format('hh:mma');
+			}
+		},{
+			label: "This Month",
+			handler: function() {
+				this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('month').format();
+				this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+				this.clockStart = moment().startOf('day').format('hh:mma');
+				this.clockEnd = moment().endOf('day').format('hh:mma');
+			}
+		}
+	];
+
+	Polymer({
+		publish: {
+			timeRanges: [],
+			startTimeRange: 'Today',
+			label: '',
+			timeStart: '',
+			timeEnd: '',
+			calendarDateStart: calendarDateStart, // 'MM-DD-YY'
+			calendarDateEnd: calendarDateEnd, // 'MM-DD-YY'
+			clockStart: clockStart, // 'hh:mma'
+			clockEnd: clockEnd, // 'hh:mma'
+			moment: null,
+			momentTimezone: 'US/Pacific',
+			momentDefaultTimezone: null,
+			timeZones: {
+				PDT: 'US/Pacific',
+				MDT: 'US/Mountain',
+				CDT: 'US/Central',
+				EDT: 'US/Eastern',
+			},
+			isCustomTime: true,
+		},
+		observe: {
+			calendarDateStart: 'updateCalendarDate',
+			calendarDateEnd: 'updateCalendarDate',
+			clockStart: 'updateTimes',
+			clockEnd: 'updateTimes',
+			momentTimezone: 'updateTimes',
+		},
+		setCustom: function() {
+			this.isCustomTime = true;
+		},
+		momentChanged: function(oldValue,newValue) {
+			var poly = this;
+			if( this.timeRanges.length == 0 ) {
+				this.timeRanges = timeRanges;
+			}
+			this.timeRanges.push({
+				label: "Custom"
+			});
+			if( poly.startTimeRange ) {
+				_.each(poly.timeRanges,function(range,key) {
+					if( range.label == poly.startTimeRange ) {
+						poly.selected = key;
+					}
+				});
+				if( poly.selected ) this.isCustomTime = false;
+			}
+		},
+		selectedChanged: function(oldValue,newValue) {
+			this.label = this.timeRanges[newValue].label;
+			if( newValue != this.timeRanges.length -1 ) {
+				this.timeRanges[newValue].handler.apply(this,[]);
+			}
+		},
+		selectedTimezoneChanged: function(oldValue,newValue) {
+			this.momentTimezone = this.timeZones[newValue];
+		},
+		updateCalendarDate: function() {
+			this.job('updateCalendarDate',function() {
+				if( this.isCustomTime ) {
+					this.selected = this.timeRanges.length -1;
+					this.label = 'Custom';
+				}
+				this.updateTimes();
+				this.isCustomTime = false;
+				this.fire('done');
+			}, 60);
+		},
+		updateTimes: function() {
+			this.job('updateTimes',function() {
+				var format = 'YYYY-MM-DD hh:mma';
+				this.timeStart = this.moment(this.calendarDateStart + ' '+this.clockStart, format).tz(this.momentTimezone).format();
+				this.timeEnd = this.moment(this.calendarDateEnd + ' '+this.clockEnd, format).tz(this.momentTimezone).format();
+				this.fire('done');
+			}, 60);
+		},
+	});
 	</script>
 </polymer-element>

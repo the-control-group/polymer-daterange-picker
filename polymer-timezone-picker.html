@@ -1,0 +1,64 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-collapse/core-collapse.html">
+<link rel="import" href="../core-menu/core-menu.html">
+<link rel="import" href="../paper-dropdown/paper-dropdown.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+
+<polymer-element name="polymer-timezone-picker" attributes="isStandardTime selectedTimezone">
+	<template>
+		<paper-dropdown-menu label="Select Timezone">
+			<paper-dropdown class="dropdown">
+				<core-menu valueattr="label" class="menu" selected="{{ selected }}">
+					<template repeat="{{ zone in timeZones }}">
+						<paper-item>{{ zone.label }}</paper-item>
+					</template>
+				</core-menu>
+			</paper-dropdown>
+		</paper-dropdown-menu>
+	</template>
+	<script src="../lodash/lodash.js"></script>
+	<script>
+		Polymer({
+			publish: {
+				isStandardTime: false,
+				selectedTimezone: null,
+				timeZones: {},
+			},
+			selectedChanged: function(oldValue,newValue) {
+				if( typeof newValue != 'undefined' ) {
+					this.selectedTimezone = this.timeZones[newValue].abbr;
+				}
+			},
+			setTimeZones: function() {
+				var poly = this;
+				var standardTime = [
+					{ abbr: 'EST', label: 'Eastern Time' },
+					{ abbr: 'CST', label: 'Central Time' },
+					{ abbr: 'MST', label: 'Mountain Time' },
+					{ abbr: 'PST', label: 'Pacific Time' },
+				];
+				var dalightTimes = [
+					{ abbr: 'EDT', label: 'Eastern Time' },
+					{ abbr: 'CDT', label: 'Central Time' },
+					{ abbr: 'MDT', label: 'Mountain Time' },
+					{ abbr: 'PDT', label: 'Pacific Time' },
+				];
+				if( this.isStandardTime ) {
+					this.timeZones = standardTime;
+				} else {
+					this.timeZones = dalightTimes;
+				}
+			},
+			ready: function() {
+				var poly = this;
+				poly.setTimeZones();
+				_.each(poly.timeZones, function(zone,key) {
+					if( zone.abbr == poly.selectedTimezone ) {
+						poly.selected = key;
+					}
+				});
+			},
+		});
+	</script>
+</polymer-element>

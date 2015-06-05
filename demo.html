@@ -3,41 +3,58 @@
 <head>
 	<script src="../webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="polymer-daterange-picker.html">
+	<link rel="import" href="polymer-timezone-picker.html">
 </head>
 <body unresolved>
 	<polymer-element name="polymer-daterange-picker-example">
 		<template>
-			<div class="startPicked"><strong>Start</strong> {{ startPicked | momentDisplay }}</div>
-			<div class="endPicked"><strong>End:</strong> {{ endPicked | momentDisplay }}</div>
-			<polymer-daterange-picker ranges="{{ranges}}" selected="{{selected}}" startPicked="{{startPicked}}" endPicked="{{endPicked}}"></polymer-daterange-picker>
+			{{ label }}
+			<div class="timeStart"><strong>Start</strong> {{ timeStart }}</div>
+			<div class="timeEnd"><strong>End:</strong> {{ timeEnd }}</div>
+			<polymer-timezone-picker
+				selectedTimezone="{{ selectedTimezone }}"></polymer-timezone-picker>
+			<polymer-daterange-picker
+				id="daterange"
+				timeRanges="{{timeRanges}}"
+				startTimeRange="Today"
+				label="{{ label }}"
+				timeStart="{{timeStart}}"
+				timeEnd="{{timeEnd}}"
+				moment="{{ moment }}"
+				selectedTimezone="{{ selectedTimezone }}"></polymer-daterange-picker>
 		</template>
-		<script src="../moment/moment.js"></script>
 		<script>
 		Polymer({
-			ranges: [
-				{
-					label: "Today",
-					handler: function(e) {
-						this.startPicked = moment().startOf('day').format();
-						this.endPicked = moment().format();
-					}
-				},{
-					label: "This Week",
-					handler: function(e) {
-						this.startPicked = moment().startOf('week').format();
-						this.endPicked = moment().format();
-					}
-				}
-			],
-			selected: 1,
-			startPicked: moment().startOf('week').format(),
-			endPicked: moment().format(),
-			momentDisplay: function(data) {
-				if(data) {
-					return moment(data).format('MM-DD-YYYY');
-				}
-				return;
-			}
+			publish: {
+				selectedTimezone: 'PDT',
+				timeRanges: [
+					{
+						label: "Last Week",
+						handler: function() {
+							this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
+							this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
+							this.clockStart = moment().startOf('day').format('hh:mma');
+							this.clockEnd = moment().endOf('day').format('hh:mma');
+						}
+					},{
+						label: "Yesterday",
+						handler: function() {
+							this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
+							this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
+							this.clockStart = moment().startOf('day').format('hh:mma');
+							this.clockEnd = moment().endOf('day').format('hh:mma');
+						}
+					},{
+						label: "Today",
+						handler: function() {
+							this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').format();
+							this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+							this.clockStart = moment().startOf('day').format('hh:mma');
+							this.clockEnd = moment().endOf('day').format('hh:mma');
+						}
+					},
+				],
+			},
 		});
 		</script>
 	</polymer-element>

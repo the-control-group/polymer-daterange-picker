@@ -1,0 +1,22 @@
+<link rel="import" href="../polymer/polymer.html">
+<polymer-element name="polymer-moment-timezone" attributes="moment momentDefaultTimezone">
+	<script src="../jquery/dist/jquery.min.js"></script>
+	<script src="../moment/moment.js"></script>
+	<script src="../moment-timezone/moment-timezone.js"></script>
+	<script src="../moment-timezone/moment-timezone-utils.js"></script>
+	<script>
+		Polymer({
+			publish: {
+				momentDefaultTimezone: null,
+			},
+			domReady: function() {
+				var poly = this;
+				if( poly.momentDefaultTimezone ) moment.tz.setDefault( poly.momentDefaultTimezone );
+				$.getJSON('../moment-timezone/data/packed/latest.json', function(data) {
+					moment.tz.load(data);
+					poly.moment = moment;
+				});
+			},
+		});
+	</script>
+</polymer-element>
