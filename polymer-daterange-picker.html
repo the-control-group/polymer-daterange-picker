@@ -59,10 +59,11 @@ Integer selecting an item from ranges
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="./polymer-calendar-datepicker.html">
 <link rel="import" href="./polymer-moment-timezone.html">
-<polymer-element name="polymer-daterange-picker" attributes="ranges startTimeRange timeStart timeEnd label momentDefaultTimezone selectedTimezone moment momentTimezone momentFormat calendarDateStart calendarDateEnd clockStart clockEnd selectedRange">
+<polymer-element name="polymer-daterange-picker" attributes="ranges startTimeRange timeStart timeEnd label momentDefaultTimezone selectedTimezone moment momentTimezone momentFormat calendarDateStart calendarDateEnd clockStart clockEnd selectedRange bowerSrc">
 	<template>
 		<link rel="stylesheet" type="text/css" href="./polymer-daterange-picker.css">
 		<polymer-moment-timezone
+			bowerSrc="{{ bowerSrc }}"
 			moment="{{ moment }}"
 			momentDefaultTimezone="{{ momentDefaultTimezone }}"></polymer-moment-timezone>
 		<div id="container">

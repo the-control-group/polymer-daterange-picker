@@ -1,10 +1,11 @@
 <link rel="import" href="../polymer/polymer.html">
-<polymer-element name="polymer-moment-timezone" attributes="moment momentDefaultTimezone">
+<polymer-element name="polymer-moment-timezone" attributes="moment bowerSrc momentDefaultTimezone">
 	<script>
 		Polymer({
 			publish: {
 				moment: null,
 				momentDefaultTimezone: null,
+				bowerSrc: '..',
 			},
 			attached: function() {
 				var poly = this;
@@ -16,12 +17,12 @@
 				}
 				// Load Moment
 				if( typeof window.moment == 'undefined' ) {
-					loadScript("../moment/min/moment.min.js");
+					loadScript(this.bowerSrc+"/moment/min/moment.min.js");
 				}
 				// Load Moment Timezone
 				function loadMomentTz() {
 					if( window.moment && typeof window.moment.tz == 'undefined' ) {
-						loadScript("../moment-timezone/builds/moment-timezone-with-data.min.js");
+						loadScript(this.bowerSrc+"/moment-timezone/builds/moment-timezone-with-data.min.js");
 					}
 				}
 				// Set Moment to polymer attribute
@@ -36,7 +37,7 @@
 					}
 				}
 				this.async(loadMomentTz,null,100);
-				this.async(setMomentAttribute,null,200);
+				this.async(setMomentAttribute,null,500);
 			},
 		});
 	</script>
