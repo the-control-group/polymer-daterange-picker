@@ -31,24 +31,24 @@
 					{
 						label: "Last Week",
 						handler: function() {
-							this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
-							this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
+							this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
+							this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
 							this.clockStart = moment().startOf('day').format('hh:mma');
 							this.clockEnd = moment().endOf('day').format('hh:mma');
 						}
 					},{
 						label: "Yesterday",
 						handler: function() {
-							this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
-							this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
+							this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
+							this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
 							this.clockStart = moment().startOf('day').format('hh:mma');
 							this.clockEnd = moment().endOf('day').format('hh:mma');
 						}
 					},{
 						label: "Today",
 						handler: function() {
-							this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').format();
-							this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+							this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('day').format();
+							this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('day').format();
 							this.clockStart = moment().startOf('day').format('hh:mma');
 							this.clockEnd = moment().endOf('day').format('hh:mma');
 						}

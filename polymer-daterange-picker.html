@@ -59,7 +59,7 @@ Integer selecting an item from ranges
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="./polymer-calendar-datepicker.html">
 <link rel="import" href="./polymer-moment-timezone.html">
-<polymer-element name="polymer-daterange-picker" attributes="ranges startTimeRange timeStart timeEnd label momentDefaultTimezone selectedTimezone moment momentTimezone momentFormat">
+<polymer-element name="polymer-daterange-picker" attributes="ranges startTimeRange timeStart timeEnd label momentDefaultTimezone selectedTimezone moment momentTimezone momentFormat calendarDateStart calendarDateEnd clockStart clockEnd selectedRange">
 	<template>
 		<link rel="stylesheet" type="text/css" href="./polymer-daterange-picker.css">
 		<polymer-moment-timezone
@@ -71,9 +71,9 @@ Integer selecting an item from ranges
 					<div class="calendarDateStart"></div>
 					<div class="calendarDateEnd"></div>
 				</div>
-				<core-selector class="ranges" selected="{{ selected }}">
+				<core-selector class="ranges" selected="{{ selectedRange }}">
 					<template repeat="{{ range, i in timeRanges }}">
-						<div class="item">
+						<div class="item" on-tap="{{ onSelectRange }}" index="{{i}}">
 							<div class="label">{{ range.label }}</div>
 							<div class="dot"></div>
 						</div>
@@ -153,16 +153,16 @@ Integer selecting an item from ranges
 			if( poly.startTimeRange ) {
 				_.each(poly.timeRanges,function(range,key) {
 					if( range.label == poly.startTimeRange ) {
-						poly.selected = key;
+						poly.selectedRange = key;
 					}
 				});
-				if( poly.selected ) this.isCustomTime = false;
+				if( poly.selectedRange ) this.isCustomTime = false;
 			}
 		},
-		selectedChanged: function(oldValue,newValue) {
-			this.label = this.timeRanges[newValue].label;
-			if( newValue != this.timeRanges.length -1 ) {
-				this.timeRanges[newValue].handler.apply(this,[]);
+		onSelectRange: function(event, detail, sender) {
+			var i = sender.getAttribute('index');
+			if( i != this.timeRanges.length -1 ) {
+				this.timeRanges[i].handler.apply(this,[]);
 			}
 		},
 		selectedTimezoneChanged: function(oldValue,newValue) {
@@ -171,7 +171,7 @@ Integer selecting an item from ranges
 		updateCalendarDate: function() {
 			this.job('updateCalendarDate',function() {
 				if( this.isCustomTime ) {
-					this.selected = this.timeRanges.length -1;
+					this.selectedRange = this.timeRanges.length -1;
 					this.label = 'Custom';
 				}
 				this.updateTimes();
@@ -194,40 +194,40 @@ Integer selecting an item from ranges
 				{
 					label: "Last Week",
 					handler: function() {
-						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
-						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
+						this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('week').subtract(1, 'weeks').format();
+						this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('week').subtract(1, 'weeks').format();
 						this.clockStart = moment().startOf('day').format('hh:mma');
 						this.clockEnd = moment().endOf('day').format('hh:mma');
 					}
 				},{
 					label: "Yesterday",
 					handler: function() {
-						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
-						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
+						this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('day').subtract(1, 'days').format();
+						this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('day').subtract(1, 'days').format();
 						this.clockStart = moment().startOf('day').format('hh:mma');
 						this.clockEnd = moment().endOf('day').format('hh:mma');
 					}
 				},{
 					label: "Today",
 					handler: function() {
-						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('day').format();
-						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+						this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('day').format();
+						this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('day').format();
 						this.clockStart = moment().startOf('day').format('hh:mma');
 						this.clockEnd = moment().endOf('day').format('hh:mma');
 					}
 				},{
 					label: "This Week",
 					handler: function() {
-						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('week').format();
-						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+						this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('week').format();
+						this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('day').format();
 						this.clockStart = moment().startOf('day').format('hh:mma');
 						this.clockEnd = moment().endOf('day').format('hh:mma');
 					}
 				},{
 					label: "This Month",
 					handler: function() {
-						this.calendarDateStart = this.moment().tz(this.momentTimezone).startOf('month').format();
-						this.calendarDateEnd = this.moment().tz(this.momentTimezone).endOf('day').format();
+						this.calendarDateStart = this.moment.tz(this.momentTimezone).startOf('month').format();
+						this.calendarDateEnd = this.moment.tz(this.momentTimezone).endOf('day').format();
 						this.clockStart = moment().startOf('day').format('hh:mma');
 						this.clockEnd = moment().endOf('day').format('hh:mma');
 					}
