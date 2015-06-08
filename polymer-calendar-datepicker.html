@@ -61,10 +61,13 @@ https://github.com/christopheclc/polymer-date-picker/blob/master/polymer-date-pi
 				this.selectedDate = this.calendar[row][col].identifier;
 			},
 			calendarDateStartChanged: function() {
-				if (this.start && this.moment) this.selectedDate = this.moment(this.calendarDateStart).tz(this.momentTimezone).format("YYYY-MM-DD");
+				if( this.start && this.moment) {
+					var date = this.moment(this.calendarDateStart, ["MM-DD-YYYY", "YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
+					this.selectedDate = date;
+				}
 			},
 			calendarDateEndChanged: function() {
-				if (this.end && this.moment) this.selectedDate = this.moment(this.calendarDateEnd).tz(this.momentTimezone).format("YYYY-MM-DD");
+				if (this.end && this.moment) this.selectedDate = this.moment(this.calendarDateEnd, ["MM-DD-YYYY", "YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
 			},
 			selectedDateChanged: function() {
 				if (this.start) this.calendarDateStart = this.selectedDate;
