@@ -89,7 +89,7 @@ Integer selecting an item from ranges
 						calendarDateStart="{{ calendarDateStart }}"
 						calendarDateEnd="{{ calendarDateEnd }}"
 						moment="{{ moment }}"
-						momentTimezone="{{ momentTimezone }}"></polymer-date-picker-calendar>
+						momentTimezone="{{ momentTimezone }}"></polymer-calendar-datepicker>
 				</div>
 				<div class="end-calendar">
 					<polymer-calendar-datepicker
@@ -98,7 +98,7 @@ Integer selecting an item from ranges
 						calendarDateStart="{{ calendarDateStart }}"
 						calendarDateEnd="{{ calendarDateEnd }}"
 						moment="{{ moment }}"
-						momentTimezone="{{ momentTimezone }}"></polymer-date-picker-calendar>
+						momentTimezone="{{ momentTimezone }}"></polymer-calendar-datepicker>
 				</div>
 			</div>
 		</div>
@@ -117,6 +117,7 @@ Integer selecting an item from ranges
 			clockStart: null, // 'hh:mma'
 			clockEnd: null, // 'hh:mma'
 			moment: null,
+			selectedTimezone: 'PDT',
 			momentTimezone: 'US/Pacific',
 			momentDefaultTimezone: null,
 			timeZones: {
