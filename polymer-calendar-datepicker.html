@@ -38,11 +38,18 @@ https://github.com/christopheclc/polymer-date-picker/blob/master/polymer-date-pi
 		Polymer({
 			momentChanged: function(oldValue,newValue) {
 				var poly = this;
-				if (!this.selectedDate) this.selectedDate = this.moment().tz(poly.momentTimezone).format("YYYY-MM-DD");
+				var momentData;
+				if (this.selectedDate) {
+					momentData = this.moment(this.selectedDate).tz(poly.momentTimezone);
+				} else {
+					momentData = this.moment().tz(poly.momentTimezone);
+				}
+				this.selectedDate = momentData.format('YYYY-MM-DD');
 				this.daysOfWeek = [0, 1, 2, 3, 4, 5, 6].map(function(n) {
 					return poly.moment().tz(poly.momentTimezone).day(n).format("ddd");
 				});
 				this.calendar = [];
+				this.rebuildYearMonth(momentData);
 			},
 			moveMonth: function(n) {
 				this.firstOfMonth.add(n, 'month');
@@ -62,16 +69,20 @@ https://github.com/christopheclc/polymer-date-picker/blob/master/polymer-date-pi
 			},
 			calendarDateStartChanged: function() {
 				if( this.start && this.moment) {
-					var date = this.moment(this.calendarDateStart, ["MM-DD-YYYY", "YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
-					this.selectedDate = date;
+					this.selectedDate = this.moment(this.calendarDateStart, ["YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
 				}
 			},
 			calendarDateEndChanged: function() {
-				if (this.end && this.moment) this.selectedDate = this.moment(this.calendarDateEnd, ["MM-DD-YYYY", "YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
+				if (this.end && this.moment) {
+					this.selectedDate = this.moment(this.calendarDateEnd, ["YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
+				}
 			},
 			selectedDateChanged: function() {
-				if (this.start) this.calendarDateStart = this.selectedDate;
-				else if (this.end) this.calendarDateEnd = this.selectedDate;
+				if(this.start) {
+					this.calendarDateStart = this.selectedDate;
+				} else if(this.end) {
+					this.calendarDateEnd = this.selectedDate;
+				}
 				this.date = this.moment(this.selectedDate).tz(this.momentTimezone);
 			},
 			dateChanged: function(oldDate, newDate) {
