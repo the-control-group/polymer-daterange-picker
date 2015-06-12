@@ -33,7 +33,7 @@
 						}
 						this.moment = moment;
 					} else {
-						setMomentAttribute();
+						poly.async(setMomentAttribute,null,500);
 					}
 				}
 				this.async(loadMomentTz,null,100);
