@@ -8,36 +8,10 @@
 				bowerSrc: '..',
 			},
 			attached: function() {
-				var poly = this;
-				function loadScript(url) {
-					var script = document.createElement('script');
-					script.type = 'text/javascript';
-					script.src = url;
-					document.body.appendChild(script);
+				this.moment = moment;
+				if( this.momentDefaultTimezone ) {
+					moment.tz.setDefault( this.momentDefaultTimezone );
 				}
-				// Load Moment
-				if( typeof window.moment == 'undefined' ) {
-					loadScript(this.bowerSrc+"/moment/min/moment.min.js");
-				}
-				// Load Moment Timezone
-				function loadMomentTz() {
-					if( window.moment && typeof window.moment.tz == 'undefined' ) {
-						loadScript(this.bowerSrc+"/moment-timezone/builds/moment-timezone-with-data.min.js");
-					}
-				}
-				// Set Moment to polymer attribute
-				function setMomentAttribute() {
-					if( window.moment && window.moment.tz ) {
-						if( this.momentDefaultTimezone ) {
-							moment.tz.setDefault( this.momentDefaultTimezone );
-						}
-						this.moment = moment;
-					} else {
-						poly.async(setMomentAttribute,null,500);
-					}
-				}
-				this.async(loadMomentTz,null,100);
-				this.async(setMomentAttribute,null,500);
 			},
 		});
 	</script>

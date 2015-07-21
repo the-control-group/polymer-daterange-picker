@@ -69,12 +69,13 @@ https://github.com/christopheclc/polymer-date-picker/blob/master/polymer-date-pi
 			},
 			calendarDateStartChanged: function() {
 				if( this.start && this.moment) {
-					this.selectedDate = this.moment(this.calendarDateStart, ["YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
+					this.selectedDate = this.moment(this.calendarDateStart, ["YYYY-MM-DD", "MM-DD-YY", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
 				}
 			},
 			calendarDateEndChanged: function() {
 				if (this.end && this.moment) {
-					this.selectedDate = this.moment(this.calendarDateEnd, ["YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
+					this.selectedDate = this.moment(this.calendarDateEnd, ["YYYY-MM-DD", "MM-DD-YY", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
+					console.log( this.selectedDate, this.calendarDateEnd )
 				}
 			},
 			selectedDateChanged: function() {
@@ -100,26 +101,29 @@ https://github.com/christopheclc/polymer-date-picker/blob/master/polymer-date-pi
 				}
 			},
 			rebuildCalendar: function() {
-				this.calendar = [];
-				this.firstOfMonth = this.moment([this.yearMonth.year, this.yearMonth.month, 1]).tz(this.momentTimezone);
-				this.monthName = this.firstOfMonth.format("MMMM");
-				this.firstDayOfMonthOffset = this.firstOfMonth.day();
-				var columns = [];
+				this.job('rebuildCalendar',function(){
+					this.calendar = [];
+					this.firstOfMonth = this.moment([this.yearMonth.year, this.yearMonth.month, 1]).tz(this.momentTimezone);
+					this.monthName = this.firstOfMonth.format("MMMM");
+					this.firstDayOfMonthOffset = this.firstOfMonth.day();
+					var columns = [];
 
-				for (var i = 0; i < 6 * 7; i++) {
-					var date = this.firstOfMonth.clone().add(i - this.firstDayOfMonthOffset, 'days')
-					if (i % 7 == 0) {
-						columns = [];
+					for (var i = 0; i < 6 * 7; i++) {
+						var date = this.firstOfMonth.clone().add(i - this.firstDayOfMonthOffset, 'days')
+						if (i % 7 == 0) {
+							columns = [];
+						}
+						columns.push({
+							date: date,
+							year: date.year(),
+							month: date.month(),
+							day: date.date(),
+							identifier: date.format("YYYY-MM-DD")
+						});
+						if ((i + 1) % 7 == 0) this.calendar.push(columns);
 					}
-					columns.push({
-						date: date,
-						year: date.year(),
-						month: date.month(),
-						day: date.date(),
-						identifier: date.format("YYYY-MM-DD")
-					});
-					if ((i + 1) % 7 == 0) this.calendar.push(columns);
-				}
+					this.fire('done');
+				},100);
 			}
 		});
 	</script>
