@@ -75,7 +75,6 @@ https://github.com/christopheclc/polymer-date-picker/blob/master/polymer-date-pi
 			calendarDateEndChanged: function() {
 				if (this.end && this.moment) {
 					this.selectedDate = this.moment(this.calendarDateEnd, ["YYYY-MM-DD", "MM-DD-YY", "YYYY-MM-DDTHH:mm:ssZ"]).tz(this.momentTimezone).format("YYYY-MM-DD");
-					console.log( this.selectedDate, this.calendarDateEnd )
 				}
 			},
 			selectedDateChanged: function() {
